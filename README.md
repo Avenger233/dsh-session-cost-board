@@ -13,7 +13,13 @@
 
 DSH 0.2.2-rc.1 及以上（`engines.dsh: >=0.2.2-rc.1 <0.3.0`）。
 
-从本仓库安装：
+从 npm 安装（推荐，可用版本号锁定，例如 `dsh-session-cost-board@1.0.2`）：
+
+```bash
+dsh plugin --profile <profile> add dsh-session-cost-board
+```
+
+或从本仓库安装：
 
 ```bash
 dsh plugin --profile <profile> add github:Avenger233/dsh-session-cost-board

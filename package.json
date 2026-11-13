@@ -1,9 +1,11 @@
 {
   "name": "dsh-session-cost-board",
   "version": "1.0.2",
-  "private": true,
   "type": "module",
   "description": "Per-session token and money accounting for DeepSeek Harness: a settings page listing every conversation's spend plus a composer cost pill.",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "dsh",
     "dsh-plugin",
