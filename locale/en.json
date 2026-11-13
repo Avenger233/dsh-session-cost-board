@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Session cost",
+    "description": "Shows what every conversation cost, with a per-session breakdown and a live price pill under the composer."
+  }
+}
