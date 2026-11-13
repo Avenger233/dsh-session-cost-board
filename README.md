@@ -1,5 +1,8 @@
 # dsh-session-cost-board — 会话花费
 
+[![npm version](https://img.shields.io/npm/v/dsh-session-cost-board.svg)](https://www.npmjs.com/package/dsh-session-cost-board)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **Per-session token & money accounting for DeepSeek Harness.** A settings page that ranks every conversation by what it cost (models, requests, cache hit rate, search/fetch fees), plus a live price pill under the composer.
 
 给 DeepSeek Harness 加一个「每个会话花了多少钱」的视图。
