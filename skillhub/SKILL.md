@@ -2,7 +2,7 @@
 name: dsh-session-cost
 slug: dsh-session-cost
 displayName: DSH 会话花费
-version: 1.0.2
+version: 1.0.3
 summary: 统计每个 DeepSeek Harness 会话花了多少钱：设置页按会话列出金额与 token 明细，输入框下方还有当前会话的实时价格药丸。
 description: 安装并说明 dsh-session-cost-board 插件（npm: dsh-session-cost-board，GitHub: Avenger233/dsh-session-cost-board）。按会话日志里的 usage 逐笔计价（DeepSeek 峰谷价、缓存命中/未命中/输出三个桶、搜索/抓取按次费），在「设置 → 会话花费」按会话列出花费，并在 composer 下方提供实时价格药丸。当用户问「这个会话花了多少钱 / 这几个会话哪个最贵 / 为什么这个月用了这么多」或想装一个按会话统计花费的 DSH 插件时使用。
 license: MIT
@@ -12,15 +12,10 @@ tags: [dsh, deepseek-harness, cost, tokens, billing, plugin, install]
 
 # DSH 会话花费
 
-在 DeepSeek Harness（DSH）里加一个「每个会话花了多少钱」的视图。这是插件 `dsh-session-cost-board` 的安装与使用技能；插件本身从 npm 或 GitHub 安装。
+给 DeepSeek Harness（DSH）加一个「每个会话花了多少钱」的视图。技能本身不包含插件代码：插件 `dsh-session-cost-board` 从 npm 或 GitHub 安装，装好后在设置页和输入框下方各有一个入口。
 
-## 何时使用
-
-- 用户问「这个会话 / 今天 / 这几个会话花了多少钱」「哪个会话最贵」；
-- 用户想按会话看到 token 与金额明细、峰谷价差异、搜索/抓取费用；
-- 用户要在 DSH 里装一个花费统计插件。
-
-不适用：OpenClaw 的会话日志分析（那是另一套目录与格式）；官方账单对账（本插件是本地估算，见下）。
+- **设置 → 会话花费**：按花费从高到低列出每个会话，带金额、请求数、未缓存输入 / 缓存命中率 / 输出 tokens、模型与搜索费；
+- **输入框下方的价格药丸**：`● ¥x.xx`，当前会话到此刻的估算花费，悬停看明细。
 
 ## 安装
 
@@ -34,14 +29,14 @@ dsh plugin --profile <profile> add dsh-session-cost-board
 dsh plugin --profile <profile> add github:Avenger233/dsh-session-cost-board
 ```
 
-安装后插件会热加载；在「插件 → 已安装插件」能看到「会话花费」，并带图标与说明。若宿主无 HMR，重启 DSH 即可。
+装完插件会热加载；「插件 → 已安装插件」里能看到「会话花费」。宿主没有 HMR 时重启 DSH。
 
-## 装完在哪看
+## 两个入口
 
-1. **设置 → 会话花费**：全部会话按花费从高到低排；每行显示金额、请求数、未缓存输入 / 缓存命中率 / 输出 tokens、模型、时间；子会话（子代理）单独一行标「子会话」，进行中的标「进行中」。顶部是全部会话合计、按模型汇总、搜索/抓取费与「本次刷新耗时」。
-2. **输入框下方价格药丸**：`● ¥x.xx` 表示当前会话到此刻的估算花费，鼠标悬停看 token 明细。它排在内置使用量统计（`N 轮 · tok/s · tokens`）之后。
+1. **设置 → 会话花费**：全部会话按花费排序；子会话（子代理）单独一行标「子会话」，进行中的标「进行中」。顶部是全部会话合计、按模型汇总、搜索/抓取费与「本次刷新耗时」。
+2. **输入框下方药丸**：排在内置使用量统计（`N 轮 · tok/s · tokens`）之后。
 
-## 计价口径（重要）
+## 计价口径
 
 DSH 自己只记 token、不记钱；本插件按官方价目表折算：
 
