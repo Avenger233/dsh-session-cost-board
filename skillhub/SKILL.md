@@ -3,8 +3,8 @@ name: dsh-session-cost
 slug: dsh-session-cost
 displayName: DSH 会话花费
 version: 1.0.3
-summary: 统计每个 DeepSeek Harness 会话花了多少钱：设置页按会话列出金额与 token 明细，输入框下方还有当前会话的实时价格药丸。
-description: 安装并说明 dsh-session-cost-board 插件（npm: dsh-session-cost-board，GitHub: Avenger233/dsh-session-cost-board）。按会话日志里的 usage 逐笔计价（DeepSeek 峰谷价、缓存命中/未命中/输出三个桶、搜索/抓取按次费），在「设置 → 会话花费」按会话列出花费，并在 composer 下方提供实时价格药丸。当用户问「这个会话花了多少钱 / 这几个会话哪个最贵 / 为什么这个月用了这么多」或想装一个按会话统计花费的 DSH 插件时使用。
+summary: 统计每个 DeepSeek Harness 会话花了多少钱：设置页按会话列出金额与 token 明细，输入框下方还有当前会话的实时花费标签。
+description: 安装并说明 dsh-session-cost-board 插件（npm: dsh-session-cost-board，GitHub: Avenger233/dsh-session-cost-board）。按会话日志里的 usage 逐笔计价（DeepSeek 峰谷价、缓存命中/未命中/输出三个桶、搜索/抓取按次费），在「设置 → 会话花费」按会话列出花费，并在输入框下方提供实时花费标签。当用户问「这个会话花了多少钱 / 这几个会话哪个最贵 / 为什么这个月用了这么多」或想装一个按会话统计花费的 DSH 插件时使用。
 license: MIT
 homepage: https://github.com/Avenger233/dsh-session-cost-board
 tags: [dsh, deepseek-harness, cost, tokens, billing, plugin, install]
@@ -15,7 +15,7 @@ tags: [dsh, deepseek-harness, cost, tokens, billing, plugin, install]
 给 DeepSeek Harness（DSH）加一个「每个会话花了多少钱」的视图。技能本身不包含插件代码：插件 `dsh-session-cost-board` 从 npm 或 GitHub 安装，装好后在设置页和输入框下方各有一个入口。
 
 - **设置 → 会话花费**：按花费从高到低列出每个会话，带金额、请求数、未缓存输入 / 缓存命中率 / 输出 tokens、模型与搜索费；
-- **输入框下方的价格药丸**：`● ¥x.xx`，当前会话到此刻的估算花费，悬停看明细。
+- **输入框下方的花费标签**：`● ¥x.xx`，当前会话到此刻的估算花费，悬停看明细。
 
 ## 安装
 
@@ -34,7 +34,7 @@ dsh plugin --profile <profile> add github:Avenger233/dsh-session-cost-board
 ## 两个入口
 
 1. **设置 → 会话花费**：全部会话按花费排序；子会话（子代理）单独一行标「子会话」，进行中的标「进行中」。顶部是全部会话合计、按模型汇总、搜索/抓取费与「本次刷新耗时」。
-2. **输入框下方药丸**：排在内置使用量统计（`N 轮 · tok/s · tokens`）之后。
+2. **输入框下方花费标签**：排在内置使用量统计（`N 轮 · tok/s · tokens`）之后；悬停可看明细，悬停时右侧 `×` 可隐藏，设置页顶部开关可重新打开。
 
 ## 计价口径
 
@@ -78,7 +78,7 @@ DSH 自己只记 token、不记钱；本插件按官方价目表折算：
 | 现象 | 处理 |
 |---|---|
 | 设置里没有「会话花费」 | 确认插件已启用（插件 → 已安装插件）；重启 DSH；查看插件行是否有加载错误 |
-| 药丸不出现 | 当前会话还没有带 usage 的 `assistant/message`（刚开始的新会话正常） |
+| 花费标签不出现 | 当前会话还没有带 usage 的 `assistant/message`（刚开始的新会话正常）；或标签被设置页开关关闭 |
 | 金额为 0 且标「未定价」 | 模型不在价目表里：在 `config.rates` 补单价 |
 | 金额偏低/偏高 | 检查是否为中转站模型、是否跨峰谷、是否漏了法定节假日 `offPeakDays` |
 

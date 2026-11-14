@@ -10,7 +10,7 @@
  *
  * 对外只暴露同源只读 HTTP 路由（客户端半边 fetch）：
  *   GET /dsh-session-cost/api/sessions        全部会话的花费列表
- *   GET /dsh-session-cost/api/session?id=...  单个会话（输入框下方的价格药丸用）
+ *   GET /dsh-session-cost/api/session?id=...  单个会话（输入框下方的花费标签用）
  */
 import {
   CURRENCY,

@@ -3,7 +3,7 @@
  *
  * 两个入口：
  *   1. 设置 → 会话花费：列出每个会话花了多少钱（按金额排序），带按模型汇总。
- *   2. 输入框下方（composer dock）的价格药丸：当前这个会话到此刻花了多少。
+ *   2. 输入框下方（composer dock）的花费标签：当前这个会话到此刻花了多少。
  * 数据全部来自宿主半边的同源只读接口 `/dsh-session-cost/api/*`。
  */
 window.__ModuleLoader__.load({
@@ -126,7 +126,7 @@ window.__ModuleLoader__.load({
       return body
     }
 
-    // ── 价格药丸开关（设置页与药丸共用，存本机 localStorage）─────────────
+    // ── 花费标签开关（设置页与标签共用，存本机 localStorage）─────────────
     const PILL_PREF_KEY = 'dsh-session-cost:pill-enabled'
     const pillPreference = (() => {
       let current = null
@@ -162,7 +162,7 @@ window.__ModuleLoader__.load({
       }
     })()
 
-    /** 订阅「价格药丸是否显示」，设置页与药丸本身实时同步。 */
+    /** 订阅「是否显示花费标签」，设置页与标签本身实时同步。 */
     function usePillEnabled() {
       const [enabled, setEnabled] = useState(() => pillPreference.get())
       useEffect(() => pillPreference.subscribe(setEnabled), [])
@@ -229,17 +229,17 @@ window.__ModuleLoader__.load({
 
         h('div', { className: 'sc-toggle' },
           h('div', null,
-            h('div', { className: 'sc-toggle-label' }, '输入框下方的价格药丸'),
+            h('div', { className: 'sc-toggle-label' }, '在输入框下方显示本次会话花费'),
             h('div', { className: 'sc-hint' },
               pillEnabled
-                ? '当前显示；关掉后 composer 下方不再出现 ¥ 药丸，随时可以在这里重新打开。'
-                : '当前已关闭；打开后 composer 下方会重新显示当前会话的花费。')),
+                ? '当前显示；关闭后输入框下方不再出现花费金额，随时可以在这里重新打开。'
+                : '当前已关闭；打开后输入框下方会重新显示本次会话花费。')),
           h('button', {
             type: 'button',
             role: 'switch',
             'aria-checked': pillEnabled,
             className: 'sc-switch' + (pillEnabled ? ' on' : ''),
-            title: pillEnabled ? '关闭价格药丸' : '显示价格药丸',
+            title: pillEnabled ? '隐藏输入框下方的花费' : '显示输入框下方的花费',
             onClick: () => pillPreference.set(!pillEnabled),
           }, h('span', { className: 'sc-switch-knob' }))),
 
@@ -330,7 +330,7 @@ window.__ModuleLoader__.load({
           '例如 { "rates": { "deepseek-flash": { "cacheHit": 0.05, "cacheMiss": 0.5, "output": 1.5 } } }。'))
     }
 
-    // ── 输入框下方：当前会话花费药丸 ──────────────────────────────────────
+    // ── 输入框下方：当前会话花费标签 ──────────────────────────────────────
     function CostPill(props) {
       const sessionId = props && props.sessionId ? String(props.sessionId) : ''
       const [row, setRow] = useState(null)
@@ -350,7 +350,7 @@ window.__ModuleLoader__.load({
           }
         }
         load()
-        // 药丸只在页面可见时轮询，后台不打扰宿主。
+        // 标签只在页面可见时轮询，后台不打扰宿主。
         const timer = setInterval(() => {
           if (document.visibilityState === 'visible') load()
         }, 10000)
@@ -382,8 +382,8 @@ window.__ModuleLoader__.load({
         h('button', {
           type: 'button',
           className: 'sc-pill-close',
-          title: '关闭价格药丸（可在 设置 → 会话花费 重新打开）',
-          'aria-label': '关闭价格药丸',
+          title: '隐藏输入框下方的花费（可在 设置 → 会话花费 重新打开）',
+          'aria-label': '隐藏输入框下方的花费',
           onClick: (event) => {
             event.stopPropagation()
             pillPreference.set(false)
