@@ -41,6 +41,16 @@ window.__ModuleLoader__.load({
       '.sc-err{color:var(--dsw-alias-state-error-primary);font-size:12px;line-height:18px;margin-top:8px;white-space:pre-line}',
       '.sc-pill{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:999px;font-size:11.5px;line-height:22px;color:var(--dsw-alias-label-secondary);background:rgba(127,127,127,.10);cursor:default;font-variant-numeric:tabular-nums}',
       '.sc-pill-dot{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-brand-primary,#4d6bfe);opacity:.75}',
+      '.sc-pill-close{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-left:2px;padding:0;border:none;border-radius:50%;background:transparent;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:14px;cursor:pointer;opacity:0;transition:opacity .12s}',
+      '.sc-pill:hover .sc-pill-close{opacity:1}',
+      '.sc-pill-close:hover{background:rgba(127,127,127,.22);color:var(--dsw-alias-label-primary)}',
+      '.sc-toggle{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0;margin:2px 0 12px;border-top:.5px solid var(--dsw-alias-border-l2);border-bottom:.5px solid var(--dsw-alias-border-l2)}',
+      '.sc-toggle-label{font-size:13px;line-height:19px}',
+      '.sc-switch{position:relative;flex:none;width:36px;height:20px;padding:0;border:none;border-radius:999px;background:rgba(127,127,127,.30);cursor:pointer;transition:background .15s}',
+      '.sc-switch.on{background:var(--dsw-alias-brand-primary,#4d6bfe)}',
+      '.sc-switch-knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}',
+      '.sc-switch.on .sc-switch-knob{transform:translateX(16px)}',
+      '.sc-switch:focus-visible{outline:2px solid var(--dsw-alias-brand-primary,#4d6bfe);outline-offset:2px}',
     ].join('')
 
     function ensureStyle() {
@@ -116,6 +126,49 @@ window.__ModuleLoader__.load({
       return body
     }
 
+    // ── 价格药丸开关（设置页与药丸共用，存本机 localStorage）─────────────
+    const PILL_PREF_KEY = 'dsh-session-cost:pill-enabled'
+    const pillPreference = (() => {
+      let current = null
+      const listeners = new Set()
+      const read = () => {
+        try {
+          const raw = window.localStorage.getItem(PILL_PREF_KEY)
+          return raw === null ? true : raw !== 'false'
+        } catch {
+          return true
+        }
+      }
+      return {
+        get() {
+          if (current === null) current = read()
+          return current
+        },
+        set(next) {
+          current = Boolean(next)
+          try {
+            window.localStorage.setItem(PILL_PREF_KEY, current ? 'true' : 'false')
+          } catch {}
+          for (const listener of [...listeners]) {
+            try {
+              listener(current)
+            } catch {}
+          }
+        },
+        subscribe(listener) {
+          listeners.add(listener)
+          return () => listeners.delete(listener)
+        },
+      }
+    })()
+
+    /** 订阅「价格药丸是否显示」，设置页与药丸本身实时同步。 */
+    function usePillEnabled() {
+      const [enabled, setEnabled] = useState(() => pillPreference.get())
+      useEffect(() => pillPreference.subscribe(setEnabled), [])
+      return enabled
+    }
+
     // ── 设置页：会话花费 ──────────────────────────────────────────────────
     function SessionCostSection() {
       const [data, setData] = useState(null)
@@ -124,6 +177,7 @@ window.__ModuleLoader__.load({
       const [tick, setTick] = useState(0)
       const [elapsedMs, setElapsedMs] = useState(null)
       const alive = useRef(true)
+      const pillEnabled = usePillEnabled()
 
       const load = useCallback(async () => {
         setLoading(true)
@@ -172,6 +226,22 @@ window.__ModuleLoader__.load({
         h('p', { className: 'sc-intro' },
           '把每个会话日志里的 token 用量，按单价表折算成金额。每条请求按它发生的时刻算高峰/谷时价，',
           '所以跨峰谷的会话也是逐笔累加的。数据是本地会话日志，不联网、不上传。'),
+
+        h('div', { className: 'sc-toggle' },
+          h('div', null,
+            h('div', { className: 'sc-toggle-label' }, '输入框下方的价格药丸'),
+            h('div', { className: 'sc-hint' },
+              pillEnabled
+                ? '当前显示；关掉后 composer 下方不再出现 ¥ 药丸，随时可以在这里重新打开。'
+                : '当前已关闭；打开后 composer 下方会重新显示当前会话的花费。')),
+          h('button', {
+            type: 'button',
+            role: 'switch',
+            'aria-checked': pillEnabled,
+            className: 'sc-switch' + (pillEnabled ? ' on' : ''),
+            title: pillEnabled ? '关闭价格药丸' : '显示价格药丸',
+            onClick: () => pillPreference.set(!pillEnabled),
+          }, h('span', { className: 'sc-switch-knob' }))),
 
         error ? h('div', { className: 'sc-err' }, '读取失败：' + error) : null,
 
@@ -265,6 +335,7 @@ window.__ModuleLoader__.load({
       const sessionId = props && props.sessionId ? String(props.sessionId) : ''
       const [row, setRow] = useState(null)
       const alive = useRef(true)
+      const pillEnabled = usePillEnabled()
 
       useEffect(() => {
         alive.current = true
@@ -295,6 +366,7 @@ window.__ModuleLoader__.load({
         }
       }, [sessionId])
 
+      if (!pillEnabled) return null
       if (!row || !row.requests) return null
       const tooltip = [
         '本次会话：' + moneyText(row.cost) + '（估算）',
@@ -306,7 +378,17 @@ window.__ModuleLoader__.load({
 
       return h('div', { className: 'sc-pill', title: tooltip },
         h('span', { className: 'sc-pill-dot' }),
-        h('span', null, moneyText(row.cost)))
+        h('span', null, moneyText(row.cost)),
+        h('button', {
+          type: 'button',
+          className: 'sc-pill-close',
+          title: '关闭价格药丸（可在 设置 → 会话花费 重新打开）',
+          'aria-label': '关闭价格药丸',
+          onClick: (event) => {
+            event.stopPropagation()
+            pillPreference.set(false)
+          },
+        }, '×'))
     }
 
     const inject = ['slots']
