@@ -2,7 +2,7 @@
 name: dsh-session-cost
 slug: dsh-session-cost
 displayName: DSH 会话花费
-version: 1.0.3
+version: 1.0.4
 summary: 统计每个 DeepSeek Harness 会话花了多少钱：设置页按会话列出金额与 token 明细，输入框下方还有当前会话的实时花费标签。
 description: 安装并说明 dsh-session-cost-board 插件（npm: dsh-session-cost-board，GitHub: Avenger233/dsh-session-cost-board）。按会话日志里的 usage 逐笔计价（DeepSeek 峰谷价、缓存命中/未命中/输出三个桶、搜索/抓取按次费），在「设置 → 会话花费」按会话列出花费，并在输入框下方提供实时花费标签。当用户问「这个会话花了多少钱 / 这几个会话哪个最贵 / 为什么这个月用了这么多」或想装一个按会话统计花费的 DSH 插件时使用。
 license: MIT
