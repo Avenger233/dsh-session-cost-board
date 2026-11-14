@@ -35,8 +35,6 @@ git clone https://github.com/Avenger233/dsh-session-cost-board.git
 dsh plugin --profile <profile> add "link:/absolute/path/to/dsh-session-cost-board"
 ```
 
-仓库里的 [`skillhub/SKILL.md`](skillhub/SKILL.md) 是发布到 [SkillHub](https://skillhub.cn) 的 agent 技能包装（slug `dsh-session-cost`）：让 agent 自己安装、解释和排查这个插件；插件本体仍从 npm / GitHub 安装。
-
 装完页面会热加载；插件出现在「插件 → 已安装插件」，设置里多一页「会话花费」，输入框下方多一个 `● ¥x.xx` 花费标签。
 
 ## 计价口径
@@ -125,7 +123,6 @@ dsh plugin --profile <profile> add "link:/absolute/path/to/dsh-session-cost-boar
 | `pricing.js` | 单价表、模型名归一、峰谷判定、单条 usage 计价 |
 | `client.js` | 客户端：设置页「会话花费」与输入框下方花费标签 |
 | `test/host.test.mjs` | 离线自检（假 ctx 跑真实 `apply()`，校验计价、token 桶、搜索费、路由） |
-| `skillhub/SKILL.md` | SkillHub 技能包装（安装/使用/排查指引，非插件运行时代码） |
 
 ```bash
 node test/host.test.mjs
